@@ -1,0 +1,65 @@
+<h1 class="page-header">
+  Register Page
+</h1>
+<div class="row show-hide-message">
+    <div [ngClass]="messageClass">
+        {{message}}
+    </div>
+</div>
+
+<form [formGroup]="registerFrmGrp" (ngSubmit)="registerUser(registerFrmGrp.value)">
+  <div class="form-group">
+    <div [ngClass]="{'has-error':((registerFrmGrp.controls.username.errors && registerFrmGrp.controls.username.dirty) 
+                        || (!usernameValid && registerFrmGrp.controls.username.dirty)), 
+                            'has-success':(!registerFrmGrp.controls.username.errors || usernameValid)}">
+    <label  for="username" >Username</label>
+      <input type="text" name="username" class="form-control" placeholder="*Username" formControlName="username" required (blur)="checkUsername()"/>
+      <ul class="help-block">
+        <li *ngIf="registerFrmGrp.controls.username.errors?.required && registerFrmGrp.controls.username.dirty" class="error">Username is required</li>
+        <li *ngIf="registerFrmGrp.controls.username.errors?.pattern && registerFrmGrp.controls.username.dirty" class="error">Username has invalid charachters</li>
+        <li *ngIf="(registerFrmGrp.controls.username.errors?.minlength || registerFrmGrp.controls.username.errors?.maxlength) && registerFrmGrp.controls.username.dirty" class="error">Minimum characters = 3, Maximum characters: 15</li>
+        <li *ngIf="!usernameValid && registerFrmGrp.controls.username.dirty" class="error">{{usernameValidMessage}}</li>
+      </ul>
+    </div>
+    <div class="form-group">
+      <div [ngClass]="{'has-error':((registerFrmGrp.controls.email.errors && registerFrmGrp.controls.email.dirty) ||
+                                    (!emailValid && registerFrmGrp.controls.email.dirty)), 
+                              'has-success':(!registerFrmGrp.controls.email.errors || emailValid)}">
+      <label  for="email">Email</label>
+        <input type="email" class="form-control" id="email" placeholder="*Email" name="email" formControlName="email" required  (blur)="checkEmail()">
+              <ul class="help-block">
+        <li *ngIf="registerFrmGrp.controls.email.errors?.required && registerFrmGrp.controls.email.dirty" class="error">Email is required</li>
+        <li *ngIf="registerFrmGrp.controls.email.errors?.pattern && registerFrmGrp.controls.email.dirty" class="error">Email has invalid charachters</li>
+        <li *ngIf="(registerFrmGrp.controls.email.errors?.minlength || registerFrmGrp.controls.email.errors?.maxlength) && registerFrmGrp.controls.email.dirty" class="error">Minimum characters = 5, Maximum characters: 50</li>
+        <li *ngIf="emailValidMessage">{{emailValidMessage}}</li>
+      </ul>
+      </div>
+    </div>
+    <div class="form-group">
+      <div [ngClass]="{'has-error':(registerFrmGrp.controls.password.errors && registerFrmGrp.controls.password.dirty), 
+                              'has-success':(!registerFrmGrp.controls.password.errors)}">
+      <label for="password">Password</label>
+      <input type="password" name="password" class="form-control" placeholder="*Password" formControlName="password" required/>
+      <ul class="help-block">
+        <li *ngIf="registerFrmGrp.controls.password.errors?.required && registerFrmGrp.controls.password.dirty" class="error">Password is required</li>
+        <li *ngIf="registerFrmGrp.controls.password.errors?.pattern && registerFrmGrp.controls.password.dirty" class="error">Password has invalid charachters</li>
+        <li *ngIf="(registerFrmGrp.controls.password.errors?.minlength || registerFrmGrp.controls.password.errors?.maxlength) && registerFrmGrp.controls.password.dirty" class="error">Minimum characters = 6, Maximum characters: 15</li>
+      </ul>
+      </div>
+    </div>
+    <div class="form-group">
+      <div [ngClass]="{'has-error':(registerFrmGrp.controls.confirmPassword.errors && registerFrmGrp.controls.confirmPassword.dirty) ||
+                                   (registerFrmGrp.errors?.matchingPasswords && registerFrmGrp.controls.confirmPassword.dirty), 
+                              'has-success':(!registerFrmGrp.controls.confirmPassword.errors && !registerFrmGrp.errors?.matchingPasswords)}">
+      <label for="confirmPassword">Confirm Password</label>
+      <input type="password" name="confirmPassword" class="form-control" placeholder="*Confirm Password" formControlName="confirmPassword" required />
+      <ul class="help-block">
+        <li *ngIf="registerFrmGrp.controls.confirmPassword.errors?.required && registerFrmGrp.controls.confirmPassword.dirty" class="error">Confirm Password is required</li>
+        <li *ngIf="registerFrmGrp.errors?.matchingPasswords && registerFrmGrp.controls.confirmPassword.dirty">Password do not match</li>
+      </ul>   
+      </div>
+    </div>
+    <button type="submit" class="btn btn-default" [disabled]="!registerFrmGrp.valid || processing || !usernameValid || !emailValid">Submit</button>
+    <img *ngIf="loading" src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+  </div>
+</form>

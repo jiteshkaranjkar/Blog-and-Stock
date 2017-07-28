@@ -1,0 +1,28 @@
+import { Component, OnInit } from '@angular/core';
+import { AuthService } from './../../services/auth.service';
+
+@Component({
+  selector: 'app-profile',
+  templateUrl: './profile.component.html',
+  styleUrls: ['./profile.component.css']
+})
+export class ProfileComponent implements OnInit {
+  username;
+  email;
+  constructor( private authService:AuthService) { }
+
+  ngOnInit() {
+    this.loadUser();
+  }
+
+  loadUser()
+  {
+    this.authService.getProfile().subscribe(
+    data => { 
+    console.log("loadUser - " + data.user);
+      this.username = data.user.username;
+      this.email = data.user.email; 
+    console.log("Profile user details - " + this.username + " -- " + this.email);
+    });
+  }
+}

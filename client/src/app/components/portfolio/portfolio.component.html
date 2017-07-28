@@ -1,0 +1,129 @@
+<div>
+<div>
+<h1 class="page-header">Stocks Portfolio</h1>
+</div>
+</div>
+
+<div class="row show-hide-message"  *ngIf="newStock">
+  <div [ngClass]="messageClass">
+      {{message}}
+  </div>
+</div>
+
+<button class="btn btn-sm btn-warning" name="button" type="button" *ngIf="!newStock" (click)="newStockForm()">
+    New Post
+</button>
+<button [disabled]="loadingStocks" class="btn btn-sm btn-warning" name="button" type="button" *ngIf="!newStock" (click)="reloadStocks()">
+  <span class="glyphicon glyphicon-repeat"></span>
+    &nbsp;&nbsp;Reload
+</button>
+  
+<br>
+<br>
+
+
+<form [formGroup]="stockFrmGrp" (ngSubmit)="onstockSubmit(stockFrmGrp.value)" *ngIf="newStock">
+  <div class="form-group">
+    <label for="company">Company</label>
+    <div [ngClass]="{'has-success': stockFrmGrp.controls.company.valid, 'has-error': stockFrmGrp.controls.company.dirty && stockFrmGrp.controls.company.errors}">
+      <input type="text" name="company" class="form-control" placeholder="*Company Name" formControlName="company" autocomplete="off">
+       <ul class="help-block">
+        <li *ngIf="stockFrmGrp.controls.company.errors?.required && stockFrmGrp.controls.company.dirty" class="error">Company name is required</li>
+        <li *ngIf="stockFrmGrp.controls.company.errors?.pattern && stockFrmGrp.controls.company.dirty" class="error">Company name has invalid charachters</li>
+        <li *ngIf="(stockFrmGrp.controls.company.errors?.minlength || stockFrmGrp.controls.company.errors?.maxlength) && stockFrmGrp.controls.company.dirty" class="error">Minimum characters = 5, Maximum characters: 50</li>
+      </ul>
+    </div>
+
+    <label for="date">Date</label>
+    <div [ngClass]="{'has-success': stockFrmGrp.controls.date.valid, 'has-error': stockFrmGrp.controls.date.dirty && stockFrmGrp.controls.date.errors}">
+      <input  type="date"  name="date" class="form-control" placeholder="*Date" formControlName="date" autocomplete="off">
+       <ul class="help-block">
+        <li *ngIf="stockFrmGrp.controls.date.errors?.required && stockFrmGrp.controls.date.dirty" class="error">date is required</li>
+      </ul>
+    </div>
+    
+    <label for="quantity">Quantity</label>
+    <div [ngClass]="{'has-success': stockFrmGrp.controls.quantity.valid, 'has-error': stockFrmGrp.controls.quantity.dirty && stockFrmGrp.controls.quantity.errors}">
+      <input type="text" name="quantity" class="form-control" placeholder="*Quantity" formControlName="quantity" autocomplete="off">
+      <ul class="help-block">
+        <li *ngIf="stockFrmGrp.controls.quantity.errors?.required && stockFrmGrp.controls.quantity.dirty" class="error">quantity is required</li>
+      </ul>
+    </div>
+    
+    <label for="price">Price</label>
+    <div [ngClass]="{'has-success': stockFrmGrp.controls.buyPrice.valid, 'has-error': stockFrmGrp.controls.buyPrice.dirty && stockFrmGrp.controls.buyPrice.errors}">
+      <input type="text" name="buyPrice" class="form-control" placeholder="*Buiyng Price" formControlName="buyPrice" autocomplete="off">
+      <ul class="help-block">
+        <li *ngIf="stockFrmGrp.controls.buyPrice.errors?.required && stockFrmGrp.controls.buyPrice.dirty" class="error">buyPrice is required</li>
+      </ul>
+    </div>
+    
+    <label for="comment">comment</label>
+    <div [ngClass]="{'has-success': stockFrmGrp.controls.comment.valid, 'has-error': stockFrmGrp.controls.comment.dirty && stockFrmGrp.controls.comment.errors}">
+      <textarea type="text" name="comment" class="form-control" placeholder="comment" formControlName="comment" autocomplete="off"></textarea>
+    </div>
+    <button type="button" (click)=goBack() [disabled]="processing" class="btn btn-sm btn-warning">Go Back</button>
+    <button type="submit" class="btn btn-sm btn-success" [disabled]="!stockFrmGrp.valid || processing">Submit</button>
+
+    <button type="button" (click)="enableForm()" class="btn btn-sm btn-warning">Enable</button>
+    <button type="button" (click)="disableForm()" class="btn btn-sm btn-success">Disable</button>
+  </div>
+</form>
+
+
+    <div id="gridStocks" *ngIf="!newStock">
+      <table class="table table-sm table-hover table-bordered">
+        <thead class="thead-default">
+          <tr id="trHead">
+            <th>Company</th>
+            <th>Quantity</th>
+            <th>Buying Price</th>
+            <th>Live Price</th>
+            <th>Date</th>
+            <th>Change</th>
+            <th>Days Gain</th>
+            <th>OverAll Gain</th>
+            <th>Comments</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let stock of Stocks; let i = index;">
+            <td #elComp contenteditable='false' (blur)="onCompanyChange(elComp.innerText, stock._id)">{{stock.company}}</td>
+            <td #elQuan contenteditable='true' (blur)="onQuantChange(elQuan.innerText, stock._id)">{{stock.quantity}}</td>
+            <td #elDate contenteditable='true' (blur)="onDateChange(elDate.innerText, stock._id)">{{stock.date}}</td>
+            <td #elBuy contenteditable='true' (blur)="onPriceChange(elBuy.innerText, stock._id)">{{stock.buyPrice}}</td>
+            <td>{{stock.livePrice}}</td>
+            <td>{{stock.change}}</td>
+            <td>{{stock.daysGain}}</td>
+            <td>{{stock.overAllGain}}</td>
+            <td #elComnt contenteditable='true' (blur)="onCommentChange(elComnt.innerText, stock._id)">{{stock.comment}}</td>
+            <td>
+              <button type="button" class="btn btn-danger btn-sm glyphicon glyphicon-remove" (click)="onDelete(stock._Id, i)"></button> 
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- <h2>  Gaugh Chart</h2>
+    <div id="gauge_chart" [chartData]="gauge_ChartData" [chartOptions]= "gauge_ChartOptions" chartType="Gauge" GoogleChart></div>
+    <h2>  Area Chart</h2>
+    <div id="area_chart" [chartData]="area_ChartData" [chartOptions]= "area_ChartOptions" chartType="AreaChart" GoogleChart></div>
+    <h2>  Line Chart</h2>
+    <div id="line_chart" [chartData]="line_ChartData" [chartOptions]= "line_ChartOptions" chartType="LineChart" GoogleChart></div>
+    <h2>  Bubble Chart</h2>
+    <div id="bubble_chart" [chartData]="bubble_ChartData"  [chartOptions] = "bubble_ChartOptions" chartType="BubbleChart" GoogleChart></div>
+    <h2>  Scatter Chart</h2>
+    <div id="scatter_chart" [chartData]="scatter_ChartData"  [chartOptions] = "scatter_ChartOptions" chartType="ScatterChart" GoogleChart></div>
+    <h2>  CandlestickChart</h2>
+    <div id="candle_chart" [chartData]="candle_ChartData" [chartOptions] = "candle_ChartOptions" chartType="CandlestickChart" GoogleChart></div>
+    <h2>  Pie Chart</h2>
+    <div id="pie_chart" [chartData]="pie_ChartData" [chartOptions] = "pie_ChartOptions" chartType="PieChart" GoogleChart></div>
+    <h2>  Bar Chart</h2>
+    <div id="bar_chart" [chartData]="bar_ChartData" [chartOptions] = "bar_ChartOptions" chartType="BarChart" GoogleChart></div>
+    <h2>  Map Chart</h2>
+    <div id="map_chart" [chartData]="map_ChartData" [chartOptions] = "map_ChartOptions" chartType="GeoChart" GoogleChart></div>
+    <h2>  Organization Chart</h2>
+    <div id="org_chart" [chartData]="org_ChartData" [chartOptions] = "org_ChartOptions" chartType="OrgChart" GoogleChart></div>
+ -->

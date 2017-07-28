@@ -1,0 +1,13 @@
+type JSON = Array<IRootObject>
+
+interface IStock {
+  __v: number;
+  _id: string;
+  buyPrice: number;
+  comment: string;
+  company: string;
+  date: string;
+  daysGain: number;
+  livePrice: number;
+  quantity: number;
+}

@@ -1,0 +1,107 @@
+<!-- <div class="container">
+  <div class="well"> -->
+    <h1 class="page-header">
+      Blog Feed
+    </h1>
+  <!-- </div>
+</div> -->
+<div class="row show-hide-message" *ngIf="message && newPost">
+  <div [ngClass]="messageClass">
+      {{message}}
+  </div>
+</div>
+
+<button class="btn btn-sm btn-warning" name="button" type="button" *ngIf="!newPost" (click)="newBlogForm()">
+    New Post
+</button>
+<button [disabled]="loadingBlogs" class="btn btn-sm btn-warning" name="button" type="button" *ngIf="!newPost" (click)="reloadBlogs()">
+  <span class="glyphicon glyphicon-repeat"></span>
+    &nbsp;&nbsp;Reload
+</button>
+  
+<br>
+<br>
+
+<form [formGroup]="blogFrmGrp" (ngSubmit)="onBlogSubmit(blogFrmGrp.value)" *ngIf="newPost">
+  <div class="form-group">
+    <label for="title">Title</label>
+    <div [ngClass]="{'has-success': blogFrmGrp.controls.title.valid, 'has-error': blogFrmGrp.controls.title.dirty && blogFrmGrp.controls.title.errors}">
+      <input type="text" name="title" class="form-control" placeholder="*Blog Title" formControlName="title" autocomplete="off">
+       <ul class="help-block">
+        <li *ngIf="blogFrmGrp.controls.title.errors?.required && blogFrmGrp.controls.title.dirty" class="error">Title is required</li>
+        <li *ngIf="blogFrmGrp.controls.title.errors?.pattern && blogFrmGrp.controls.title.dirty" class="error">Title has invalid charachters</li>
+        <li *ngIf="(blogFrmGrp.controls.title.errors?.minlength || blogFrmGrp.controls.title.errors?.maxlength) && blogFrmGrp.controls.title.dirty" class="error">Minimum characters = 5, Maximum characters: 50</li>
+      </ul>
+    </div>
+
+    <label for="body">Body</label>
+    <div [ngClass]="{'has-success': blogFrmGrp.controls.body.valid, 'has-error': blogFrmGrp.controls.body.dirty && blogFrmGrp.controls.body.errors}">
+      <textarea type="text" name="body" class="form-control" placeholder="*Body" formControlName="body" autocomplete="off"></textarea>
+       <ul class="help-block">
+        <li *ngIf="blogFrmGrp.controls.body.errors?.required && blogFrmGrp.controls.body.dirty" class="error">Body is required</li>
+        <li *ngIf="(blogFrmGrp.controls.body.errors?.minlength || blogFrmGrp.controls.body.errors?.maxlength) && blogFrmGrp.controls.body.dirty" class="error">Minimum characters = 5, Maximum characters: 500</li>
+      </ul>
+    </div>
+    <button type="button" (click)=goBack() [disabled]="processing" class="btn btn-sm btn-warning">Go Back</button>
+    <button type="submit" class="btn btn-sm btn-success" [disabled]="!blogFrmGrp.valid || processing">Submit</button>
+  </div>
+</form>
+
+<div *ngIf="!newPost">
+  <div class="panel panel-primary" *ngFor="let blog of blogPosts">
+    <div class="panel-heading">
+      <h3  class="panel-title">{{blog.title}}</h3>
+    </div>
+    <div class="panel-body">
+        {{blog.body}}
+    </div>
+    <!-- Footer start -->
+    <div class="panel-footer">
+      <strong>Posted by:</strong>{{blog.createdBy}}
+      <br>
+      <strong>Date:</strong>{{blog.createdAt | date:'MMM dd, yyyy'}}
+      <div *ngIf="username === blog.createdBy">
+        <strong>Likes:</strong>blog.Likes
+        <br>
+        <strong>Dislikes:</strong>blog.disLikes
+      </div>
+        <a [routerLink]="['/edit-blog', blog._id]" *ngIf="username === blog.createdBy">
+        <button name="button" type="button" class="btn btn-sm btn-info" >Edit</button>
+      </a>
+        <a [routerLink]="['/delete-blog', blog._id]" *ngIf="username === blog.createdBy">
+        <button name="button" type="button" class="btn btn-sm btn-info" >Delete</button>
+      </a>
+      <!-- Likes Dropdown -->
+      <div class="dropdown"  *ngIf="username !== blog.createdBy">
+        <button type="button" class="btn btn-sm btn-success">
+          <span class="glyphicon glyphicon-thumbs-up">&nbsp;</span>Likes 10
+        </button>
+        <div class="dropdown-content">
+          <a href="#">JK</a>
+          <a href="#">JVK</a>
+          <a href="#">NJK</a>
+          <a href="#">AJK</a>
+        </div>
+      </div>
+      <!-- Dislikes Dropdown -->
+      <div class="dropdown"  *ngIf="username !== blog.createdBy">
+        <button type="button" class="btn btn-sm btn-warning">
+          <span class="glyphicon glyphicon-thumbs-down">&nbsp;</span>Dislikes 5
+        </button>
+        <div class="dropdown-content">
+          <a href="#">JK</a>
+          <a href="#">JVK</a>
+          <a href="#">NJK</a>
+          <a href="#">AJK</a>
+        </div>
+      </div>
+
+      <ul class="list-group">
+        <li class="list-group-item">
+          <button type="button" name="button" class="btn btn-sm btn-danger" (click)="draftComment()">Post Comment</button>
+        </li>
+      </ul>
+    </div>
+    <!-- Footer end -->
+  </div>
+</div>
